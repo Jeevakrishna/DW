@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Jupyter|Home</title>
+    <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Jupyter_logo.svg/512px-Jupyter_logo.svg.png" sizes="16x16">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 10px;
+            display: block;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- EX-6 Decision Tree Classifier -->
+    <h1>EX-6 Implement Decision Tree Classifier</h1>
+    <p>In this example, we will implement a decision tree classifier using the scikit-learn library in Python. The following code demonstrates how to create a simple decision tree model, train it on a sample dataset, and evaluate its performance.</p>
+
+    <pre><code>
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score, classification_report
+        
+# Sample dataset with numerical and categorical features
+data = {
+    'Age': [25, 45, 35, 50, 23],
+    'Income': ['High', 'Low', 'Medium', 'Medium', 'Low'],
+    'Student': ['No', 'Yes', 'Yes', 'No', 'Yes'],
+    'Credit_rating': ['Fair', 'Excellent', 'Fair', 'Excellent', 'Fair'],
+    'Buys_computer': ['No', 'No', 'Yes', 'Yes', 'Yes']
+    }
+        
+# Create a DataFrame
+df = pd.DataFrame(data)
+        
+# Separate the target variable from the feature variables
+X = df.drop('Buys_computer', axis=1)
+y = df['Buys_computer']
+        
+# Convert categorical data to numerical using LabelEncoder
+le = LabelEncoder()
+        
+for column in X.columns:
+     if X[column].dtype == 'object':
+        X[column] = le.fit_transform(X[column])
+        
+# Split the data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+        
+ # Create and train the Decision Tree Classifier
+clf = DecisionTreeClassifier(random_state=42)
+clf.fit(X_train, y_train)
+        
+ # Make predictions on the test set
+y_pred = clf.predict(X_test)
+        
+ # Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+report = classification_report(y_test, y_pred)
+        
+ print(f"Accuracy: {accuracy}")
+print(f"Classification Report:\n{report}")
+</code></pre>
+
+    <!-- EX-7 K-Means Clustering Algorithm -->
+    <h2>EX-7 K-Means Clustering Algorithm</h2>
+    <p>The following example demonstrates how to apply the K-means clustering algorithm using scikit-learn. We'll generate sample data with three distinct clusters, apply the K-means algorithm to classify the data, and visualize the clusters.</p>
+
+    <pre><code>
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.datasets import make_blobs
+        
+# Step 1: Generate sample data
+# Create a dataset with 2 features and 3 centers (clusters)
+X, y = make_blobs(n_samples=300, centers=3, n_features=2, random_state=42)
+        
+# Step 2: Apply K-Means Clustering
+kmeans = KMeans(n_clusters=3, random_state=42)
+kmeans.fit(X)
+        
+# Get cluster centers and labels
+centers = kmeans.cluster_centers_
+labels = kmeans.labels_
+        
+# Step 3: Visualize the clusters
+plt.figure(figsize=(8, 6))
+# Scatter plot of data points, color-coded by their cluster labels
+plt.scatter(X[:, 0], X[:, 1], c=labels, s=50, cmap='viridis')
+        
+# Plot the cluster centers
+plt.scatter(centers[:, 0], centers[:, 1], c='red', s=200, alpha=0.75, marker='X', label='Centroids')
+        
+ # Set title and labels
+plt.title('K-Means Clustering')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.legend()
+plt.show()
+    </code></pre>
+
+    <!-- EX-8 DBSCAN Clustering Algorithm -->
+    <h2>EX-8 DBSCAN Clustering Algorithm</h2>
+    <p>DBSCAN (Density-Based Spatial Clustering of Applications with Noise) is a clustering algorithm that identifies high-density regions in data. This example demonstrates how to apply DBSCAN to a non-linear dataset (moons shape) and visualize the clusters.</p>
+
+    <pre><code>
+# Import necessary libraries
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import DBSCAN
+from sklearn.datasets import make_moons
+        
+# Step 1: Generate sample data
+# Create a dataset with 2 features in a non-linear pattern (moons shape)
+X, y = make_moons(n_samples=300, noise=0.05, random_state=42)
+        
+# Step 2: Apply DBSCAN
+# Parameters:
+# eps: The maximum distance between two samples for them to be considered neighbors
+# min_samples: The number of samples (or total weight) in a neighborhood for a point to be considered as a core point
+dbscan = DBSCAN(eps=0.2, min_samples=5)
+labels = dbscan.fit_predict(X)
+        
+# Step 3: Visualize the clusters
+# Get unique labels (cluster numbers and -1 for noise)
+unique_labels = set(labels)
+        
+# Create a color palette for different clusters
+colors = [plt.cm.Spectral(each) for each in np.linspace(0, 1, len(unique_labels))]
+        
+plt.figure(figsize=(8, 6))
+for label, col in zip(unique_labels, colors):
+    if label == -1:
+        # Black used for noise (outliers)
+        col = [0, 0, 0, 1]
+        
+# Plot data points for the current cluster
+cluster_mask = (labels == label)
+xy = X[cluster_mask]
+plt.scatter(xy[:, 0], xy[:, 1], color=tuple(col), label=f'Cluster {label}' if label != -1 else 'Noise')
+        
+# Set title and labels
+plt.title('DBSCAN Clustering')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.legend()
+plt.show()
+    </code></pre>
+
+    <!-- EX-9 Outlier Detection using Local Outlier Factor (LOF) -->
+    <h2>EX-9 Outlier Detection using Local Outlier Factor (LOF)</h2>
+    <p>In this example, we apply the Local Outlier Factor (LOF) algorithm to detect outliers in a dataset with clusters. The LOF algorithm identifies points that deviate significantly from the surrounding data.</p>
+
+    <pre><code>
+#Import necessary libraries
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.neighbors import LocalOutlierFactor
+from sklearn.datasets import make_blobs
+        
+# Step 1: Generate sample data with outliers
+X, _ = make_blobs(n_samples=300, centers=3, cluster_std=0.7, random_state=42)
+outliers = np.random.uniform(low=-10, high=10, size=(20, 2))
+X = np.concatenate([X, outliers], axis=0)
+        
+# Step 2: Apply Local Outlier Factor (LOF)
+lof = LocalOutlierFactor(n_neighbors=20, contamination=0.05)
+y_pred = lof.fit_predict(X)
+outlier_mask = y_pred == -1
+        
+# Step 3: Visualize data points and outliers
+plt.figure(figsize=(8, 6))
+plt.scatter(X[:, 0], X[:, 1], c='b', label='Normal points')
+plt.scatter(X[outlier_mask][:, 0], X[outlier_mask][:, 1], c='r', label='Outliers', marker='x')
+plt.title('Outlier Detection using LOF')
+plt.legend()
+plt.show()
+        
+    </code></pre>
+
+    <!-- EX-10 Apriori Algorithm and Subgraph Mining -->
+    <h2>EX-10 Apriori Algorithm and Subgraph Mining</h2>
+    <p>This example demonstrates how to use the Apriori algorithm to mine frequent subgraphs from a collection of graphs. Subgraph mining is a common approach to find recurring patterns in graph data.</p>
+
+    <pre><code>
+import networkx as nx
+import matplotlib.pyplot as plt
+from itertools import combinations
+from collections import defaultdict
+        
+# Step 1: Generate sample graphs
+G1 = nx.Graph([(1, 2), (2, 3), (3, 1)])
+G2 = nx.Graph([(1, 2), (2, 4), (4, 1)])
+G3 = nx.Graph([(1, 2), (2, 3), (1, 3)])
+        
+graphs = [G1, G2, G3]
+        
+# Step 2: Function to find all subgraphs of size k
+def find_subgraphs(graph, k):
+    return [graph.subgraph(c) for c in combinations(graph.nodes(), k) if nx.is_connected(graph.subgraph(c))]
+        
+# Step 3: Apriori-like subgraph mining
+def apriori_subgraph_mining(graphs, min_support=2):
+    frequent_subgraphs = defaultdict(int)
+    k = 2
+    while True:
+        current_frequent_subgraphs = defaultdict(int)  # Initialize for current k
+        for graph in graphs:
+            for subgraph in find_subgraphs(graph, k):
+                edges = tuple(sorted(subgraph.edges()))
+                current_frequent_subgraphs[edges] += 1  # Use the current dictionary
+                
+        current_frequent_subgraphs = {sg: count for sg, count in current_frequent_subgraphs.items() if count >= min_support}
+        
+        if not current_frequent_subgraphs:
+             break
+        
+# Update the main dictionary with current findings
+        for edges, count in current_frequent_subgraphs.items():
+            frequent_subgraphs[edges] += count
+        
+        k += 1
+        
+    return frequent_subgraphs
+        
+# Step 4: Run mining and show results
+frequent_subgraphs = apriori_subgraph_mining(graphs)
+        
+# Step 5: Visualize the graphs
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 3, 1)
+nx.draw(G1, with_labels=True)
+plt.title("G1")
+        
+plt.subplot(1, 3, 2)
+nx.draw(G2, with_labels=True)
+plt.title("G2")
+        
+plt.subplot(1, 3, 3)
+nx.draw(G3, with_labels=True)
+plt.title("G3")
+        
+plt.show()
+print("Frequent Subgraphs:", frequent_subgraphs)
+        
+        </code></pre>
+
+        <footer style="margin-top: 40px; text-align: center; font-size: 14px; color: #7f8c8d;">
+            Made by Jeevakrishna V
+        </footer>
+
+</body>
+</html>
